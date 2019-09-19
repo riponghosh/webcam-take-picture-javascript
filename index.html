@@ -30,7 +30,7 @@
 		const constraints = {
 			audio: true,
 			video: {
-				width: 1280, height: 720
+				width: video.videoWidth, height: video.videoHeight
 			}
 		};
 
@@ -56,7 +56,9 @@
 		// Draw image
 		var context = canvas.getContext('2d');
 		snap.addEventListener("click", function() {
-			context.drawImage(video, 0, 0, 640, 480);
+			context.width=video.videoWidth;
+			context.height=video.videoHeight;
+			context.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
 		});
 	</script>
 </body>
