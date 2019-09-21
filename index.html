@@ -13,6 +13,7 @@
 	<!-- Trigger canvas web API -->
 	<div class="controller">
 	    <button id="snap">Capture</button>
+	    <button id="switch-camera">Switch Camera</button>
 	</div>
 
 	<!-- Webcam video snapshot -->
@@ -26,16 +27,19 @@
 		const canvas = document.getElementById('canvas');
 		const snap = document.getElementById("snap");
 		const errorMsgElement = document.querySelector('span#errorMsg');
+		const switchCamera = document.getElementById('switch-camera');
 
-		const constraints = {
+		let shouldFaceUser = true; //Default is the front cam
+		let previousStream=null;
+		let constraints = {
 			audio: true,
 			video: {
 				width: video.videoWidth, height: video.videoHeight
 			}
 		};
-
 		// Access webcam
 		async function init() {
+			constraints.video.facingMode=shouldFaceUser ? 'user' : 'environment'
 			try {
 				const stream = await navigator.mediaDevices.getUserMedia(constraints);
 				handleSuccess(stream);
@@ -48,6 +52,7 @@
 		function handleSuccess(stream) {
 			window.stream = stream;
 			video.srcObject = stream;
+			previousStream=stream;
 		}
 
 		// Load init
@@ -59,6 +64,13 @@
 			context.width=video.videoWidth;
 			context.height=video.videoHeight;
 			context.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
+		});
+		switchCamera.addEventListener("click", async function() {
+			shouldFaceUser = !shouldFaceUser;
+			previousStream.getTracks().forEach(t => {
+			    t.stop();
+			});
+			await init();
 		});
 	</script>
 </body>
